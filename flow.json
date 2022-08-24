@@ -7,27 +7,32 @@
 	"accounts": {
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
-			"key": "5713b3a2f4b2dd01fcf0d512c5aa7db426d35a26179c3eb0d17fe7ea80348e3a"
-		}
-	},
+			"key": "8f62c5b42479057c3e44880c6ce7108ff77cf51b503ab79142609fd0839c251d"
+		},
+	
 	"testnet-account": {
-	  "address": "0x38aae9268f824439",
+	  "address": "0x24b1f8dfe3950ad7",
 	  "key": {
 		"type": "hex",
 		"index": 0,
 		"signatureAlgorithm": "ECDSA_P256",
 		"hashAlgorithm": "SHA3_256",
-		"privateKey": "ff352ccee4e647df54ba1e75a12bf01248b49ed76a212a6ec92541b5f0ef647d"
+		"privateKey": "45fc6384023388274710e7b0fe159184afa29f04206643772af449dc2b80e63a"
+	  	}
 	  }
-	},
-	"contracts": {
-		"HelloWorld": "./flow/cadence/contracts/HelloWorld.cdc"
 	},
 	"deployments": {
-	  "testnet": {
-		"testnet-account": [
-		  "HelloWorld"
-		]
+		"testnet": {
+		  "testnet-account": [
+			"HelloWorld",
+			"myNumber",
+			"RandomContract"
+		  ]
+		}
+	  },
+	"contracts": {
+		"HelloWorld": "./flow/cadence/contracts/HelloWorld.cdc",
+		"myNumber": "./flow/cadence/contracts/myNumber.cdc",
+		"RandomContract": "./flow/cadence/contracts/RandomContract.cdc"
 	  }
-	}
 }
