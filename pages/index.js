@@ -8,10 +8,72 @@ export default function Home() {
   
   const [newGreeting, setNewGreeting] = useState('');
   const [greeting, setGreeting] = useState('');
+  const [newNumber, setNewNumber] = useState('');
   
-  function runTransaction(){
-    console.log(newGreeting)
+  async function runTransaction(){
+    const transactionId = await fcl.mutate({
+      cadence: `
+      import HelloWorld from 0x24b1f8dfe3950ad7
+
+      transaction(myNewGreeting: String) {
+
+        prepare(signer: AuthAccount) {}
+
+        execute {
+          HelloWorld.changeGreeting(newGreeting: myNewGreeting)
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(newGreeting, t.String)
+      ],
+      proposer: fcl.authz,
+      payer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+
+    console.log("Here is the transactionId: " + transactionId);
+    await fcl.tx(transactionId).onceSealed();
+    executeScript();
   }
+
+  async function runTransactionTest(){
+    
+    const transactionId = await fcl.mutate({
+      cadence: `
+      import SimpleTest from 0x6c0d53c676256e8c
+
+      transaction(myNewNumber: Int) {
+
+        prepare(signer: AuthAccount) {}
+
+        execute {
+          SimpleTest.updateNumber(newNumber: myNewNumber)
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(newNumber, t.Int)
+      ],
+      proposer: fcl.authz,
+      payer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+
+    
+    
+    await fcl.tx(transactionId).onceSealed();
+    console.log("Here is the transactionId: " + transactionId);
+    console.log("Here is the number: " + newNumber);
+    executeScriptNumber();
+  }
+
+
+
   async function executeScript(){
     const response = await fcl.query({
       cadence: `
@@ -59,7 +121,9 @@ export default function Home() {
         f: String?,
         g: [Int],
         h: {String: Address}
-      ){}
+      ): String{
+        return b
+      }
       `,
       args: (arg, t) => [
         arg("2", t.Int),
@@ -81,7 +145,7 @@ export default function Home() {
       console.log("Yeet: " + response);
   }
   useEffect(()=>{
-    executeScriptRandom().Address
+    executeScriptRandom()
   }, [])
 
 
@@ -111,6 +175,10 @@ export default function Home() {
           <p>
             {greeting}
           </p>
+          <div className={styles.flex}>
+            <button onClick={runTransactionTest}>Number</button>
+            <input onChange={(e) => setNewNumber(e.target.value)} placeholder='Number, here!' />
+          </div>
           
       </main>
     </div>
