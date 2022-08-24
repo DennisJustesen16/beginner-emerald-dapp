@@ -9,7 +9,9 @@ export default function Home() {
   const [newGreeting, setNewGreeting] = useState('');
   const [greeting, setGreeting] = useState('');
   const [newNumber, setNewNumber] = useState('');
-  
+  const [txStatus, setTxStatus] = useState("Run Transaction");
+
+
   async function runTransaction(){
     const transactionId = await fcl.mutate({
       cadence: `
@@ -32,10 +34,21 @@ export default function Home() {
       authorizations: [fcl.authz],
       limit: 999
     })
-
-
-    console.log("Here is the transactionId: " + transactionId);
+    fcl.tx(transactionId).subscribe(res => {
+      console.log(res);
+      if (res.status === 0 || res.status === 1){
+        setTxStatus('Pending...');
+      } else if (res.status === 2){
+        setTxStatus('Finalized...');
+      } else if (res.status === 3) {
+        setTxStatus('Executed...');
+      } else if (res.status === 4){
+        setTxStatus('Sealed!');
+        setTimeout(() => setTxStatus('Run Transaction'), 2000);
+      }
+    })
     await fcl.tx(transactionId).onceSealed();
+    console.log("Here is the transactionId: " + transactionId);
     executeScript();
   }
 
@@ -161,26 +174,20 @@ export default function Home() {
 
       <Nav />
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to my <a href="https://google.com" target="_blank">Emerald DApp!</a>
-        </h1>
-        <p>
-          Sponsored by Google
-          </p>
-          <div className={styles.flex}>
-            <button onClick={runTransaction}>Run Transaction</button>
-            <input onChange={(e) => setNewGreeting(e.target.value)} placeholder='Hello, Idiots!' />
-          </div>
-          <p>
-            {greeting}
-          </p>
-          <div className={styles.flex}>
-            <button onClick={runTransactionTest}>Number</button>
-            <input onChange={(e) => setNewNumber(e.target.value)} placeholder='Number, here!' />
-          </div>
-          
-      </main>
+      <div className={styles.welcome}>
+  <h1 className={styles.title}>
+    Welcome to my <a href="https://academy.ecdao.org" target="_blank">Emerald DApp!</a>
+  </h1>
+  <p>This is a DApp created by Jacob Tucker (<i>tsnakejake#8364</i>).</p>
+</div>
+
+<main className={styles.main}>
+  <p>{greeting}</p>
+  <div className={styles.flex}>
+    <input onChange={(e) => setNewGreeting(e.target.value)} placeholder="Hello, Idiots!" />
+    <button onClick={runTransaction}>{txStatus}</button>
+  </div>
+</main>
     </div>
   )
 }
