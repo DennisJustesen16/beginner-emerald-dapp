@@ -43,8 +43,10 @@
 
 .main p {
   position: relative;
-  font-size: 25px;
+  font-size: 50px;
   top: 20%;
+  color: black;
+  text-transform: uppercase;
 }
 
 .flex input {
